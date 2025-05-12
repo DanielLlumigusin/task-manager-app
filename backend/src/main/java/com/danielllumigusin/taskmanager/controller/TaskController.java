@@ -60,8 +60,9 @@ public class TaskController {
 			task.setTitulo(updatedTask.getTitulo());
 			task.setDescripcion(updatedTask.getDescripcion());
 			task.setEstado(updatedTask.getEstado());
+			task.setFechaLimite(updatedTask.getFechaLimite());
 			// Reutilizo el método actualizando el objeto Task
-			taskService.saveTask(task); 
+			taskService.updateTask(id, updatedTask); 
 
 			return ResponseEntity.ok("Tarea actualizada correctamente.");
 		} else {

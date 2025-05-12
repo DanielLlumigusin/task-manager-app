@@ -3,6 +3,8 @@ package com.danielllumigusin.taskmanager.UnitTest;
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -33,9 +35,9 @@ class TaskServiceTest {
 
     @Test
     void shouldReturnAllTasks() {
-        // Crea dos tareas simuladas
-        Task task1 = new Task(1L, "Tarea 1", "Descripción 1", EstadoEnum.PENDIENTE);
-        Task task2 = new Task(2L, "Tarea 2", "Descripción 2", EstadoEnum.COMPLETADO);
+        // Crea dos tareas simuladas con fechas
+        Task task1 = new Task(1L, "Tarea 1", "Descripción 1", EstadoEnum.PENDIENTE, LocalDateTime.now(), LocalDate.now().plusDays(1));
+        Task task2 = new Task(2L, "Tarea 2", "Descripción 2", EstadoEnum.COMPLETADO, LocalDateTime.now().minusDays(1), LocalDate.now());
 
         // Simula la respuesta del repositorio
         when(taskRepository.findAll()).thenReturn(Arrays.asList(task1, task2));
@@ -45,23 +47,25 @@ class TaskServiceTest {
 
         assertThat(result).hasSize(2);
         assertThat(result.get(0).getTitulo()).isEqualTo("Tarea 1");
+        assertThat(result.get(0).getFechaCreacion()).isBeforeOrEqualTo(LocalDateTime.now()); // Verifica la fecha de creación
     }
 
     @Test
     void shouldReturnTaskByIdIfExists() {
-        Task task = new Task(1L, "Tarea única", "Descripción", EstadoEnum.PENDIENTE);
+        Task task = new Task(1L, "Tarea única", "Descripción", EstadoEnum.PENDIENTE, LocalDateTime.now(), LocalDate.now().plusDays(1));
         when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
 
         Optional<Task> result = taskService.findTaskById(1L);
 
         assertThat(result).isPresent(); // Verifica que el Optional no esté vacío
         assertThat(result.get().getTitulo()).isEqualTo("Tarea única");
+        assertThat(result.get().getFechaCreacion()).isBeforeOrEqualTo(LocalDateTime.now()); // Verifica la fecha de creación
     }
 
     @Test
     void shouldDeleteTaskIfExists() {
         Long taskId = 1L;
-        Task task = new Task(taskId, "Eliminar", "desc", EstadoEnum.PENDIENTE);
+        Task task = new Task(taskId, "Eliminar", "desc", EstadoEnum.PENDIENTE, LocalDateTime.now(), LocalDate.now().plusDays(1));
 
         when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
 
@@ -74,8 +78,8 @@ class TaskServiceTest {
     @Test
     void shouldUpdateExistingTask() {
         Long taskId = 1L;
-        Task existing = new Task(taskId, "Viejo", "desc", EstadoEnum.PENDIENTE);
-        Task updates = new Task(taskId, "Nuevo", "actualizado", EstadoEnum.COMPLETADO);
+        Task existing = new Task(taskId, "Viejo", "desc", EstadoEnum.PENDIENTE, LocalDateTime.now(), LocalDate.now().plusDays(1));
+        Task updates = new Task(taskId, "Nuevo", "actualizado", EstadoEnum.COMPLETADO, LocalDateTime.now(), LocalDate.now().plusDays(1));
 
         when(taskRepository.findById(taskId)).thenReturn(Optional.of(existing));
         when(taskRepository.save(any(Task.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -86,6 +90,7 @@ class TaskServiceTest {
         assertThat(result.getTitulo()).isEqualTo("Nuevo");
         assertThat(result.getDescripcion()).isEqualTo("actualizado");
         assertThat(result.getEstado()).isEqualTo(EstadoEnum.COMPLETADO);
+        assertThat(result.getFechaCreacion()).isBeforeOrEqualTo(LocalDateTime.now()); // Verifica la fecha de creación
     }
 
     @Test
