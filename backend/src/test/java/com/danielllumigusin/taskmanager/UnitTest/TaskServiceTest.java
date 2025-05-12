@@ -67,12 +67,13 @@ class TaskServiceTest {
         Long taskId = 1L;
         Task task = new Task(taskId, "Eliminar", "desc", EstadoEnum.PENDIENTE, LocalDateTime.now(), LocalDate.now().plusDays(1));
 
-        when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
+        when(taskRepository.findById(taskId)).thenReturn(Optional.of(task)); 
+        when(taskRepository.existsById(taskId)).thenReturn(true); 
 
         boolean deleted = taskService.removeTask(taskId);
 
-        assertThat(deleted).isTrue(); // Debe devolver true si se eliminó
-        verify(taskRepository).deleteById(taskId); // Verifica que se haya llamado a delete
+        assertThat(deleted).isTrue();
+        verify(taskRepository).deleteById(taskId);
     }
 
     @Test

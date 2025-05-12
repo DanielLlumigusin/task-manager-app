@@ -14,6 +14,7 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import jakarta.validation.constraints.FutureOrPresent;
@@ -36,7 +37,8 @@ public class Task {
     @NotNull(message = "El estado es obligatorio")
     @Enumerated(EnumType.STRING)
     private EstadoEnum estado;
-
+    
+    @CreationTimestamp
     @NotNull(message = "La fecha de creación es obligatoria")
     private LocalDateTime fechaCreacion;
     

@@ -16,6 +16,17 @@ services:
       - db
     restart: always
 
+  taskmanager-frontend:
+    image: danielllumigusin/task-frontend:latest
+    container_name: taskmanager-frontend
+    ports:
+      - "80:80"
+    environment:
+      - VITE_API_URL=http://taskmanager-backend:8080
+    depends_on:
+      - taskmanager-backend
+    restart: always
+
   db:
     image: mysql:8.0
     container_name: taskmanager-db
